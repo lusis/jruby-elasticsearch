@@ -13,7 +13,13 @@ class ElasticSearch::SearchRequest < ElasticSearch::Request
   public
   def initialize(client)
     @client = client
-    @prep = org.elasticsearch.action.search.SearchRequestBuilder.new(@client)
+    # Try the 0.19 API
+    begin
+      @prep = org.elasticsearch.action.search.SearchRequestBuilder.new(@client)
+    rescue NameError
+      # Okay so maybe the pre-0.19 API works?
+      @prep = org.elasticsearch.client.action.search.SearchRequestBuilder.new(@client)
+    end
     @indeces = []
     super()
   end # def initialize
